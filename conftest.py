@@ -2,6 +2,7 @@ import pytest
 import os
 
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
 
 
 def pytest_addoption(parser):
@@ -28,20 +29,18 @@ def driver(request):
 
     if browser_name == "chrome":
         options = webdriver.ChromeOptions()
-
+        service = ChromeService(executable_path=f"{drivers_folder}/chromedriver",)
         if headless:
             options.headless = True
-
-        _driver = webdriver.Chrome(
-            executable_path=os.path.expanduser(f"{drivers_folder}/chromedriver"),
-            options=options
-        )
+        _driver = webdriver.Chrome(service=service, options=options)
     elif browser_name == "firefox":
-        _driver = webdriver.Firefox(executable_path=os.path.expanduser(f"{drivers_folder}/geckodriver"))
-    elif browser_name == "opera":
-        _driver = webdriver.Opera(executable_path=os.path.expanduser(f"{drivers_folder}/operadriver"))
+        _driver = webdriver.Firefox(executable_path=f"{drivers_folder}/geckodriver")
     elif browser_name == "yandex":
-        _driver = webdriver.Chrome(executable_path=os.path.expanduser(f"{drivers_folder}/yandexdriver"))
+        options = webdriver.ChromeOptions()
+        if headless:
+            options.headless = True
+        service = ChromeService(executable_path=f"{drivers_folder}/yandexdriver")
+        _driver = webdriver.Chrome(service=service, options=options)
     elif browser_name == "safari":
         _driver = webdriver.Safari()
     else:
